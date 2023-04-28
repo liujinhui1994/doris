@@ -215,7 +215,7 @@ REVOKE USAGE_PRIV ON RESOURCE resource_name FROM ROLE role_name
 Example:
 
 ```sql
--- yarn cluster 模式
+-- yarn cluster mode
 CREATE EXTERNAL RESOURCE "spark0"
 PROPERTIES
 (
@@ -234,7 +234,7 @@ PROPERTIES
   "broker.password" = "password0"
 );
 
--- spark standalone client 模式
+-- spark standalone client mode
 CREATE EXTERNAL RESOURCE "spark1"
 PROPERTIES
 (
@@ -244,6 +244,37 @@ PROPERTIES
   "working_dir" = "hdfs://127.0.0.1:10000/tmp/doris",
   "broker" = "broker1"
 );
+
+-- yarn HA mode
+CREATE EXTERNAL RESOURCE sparkHA
+PROPERTIES
+(
+  "type" = "spark",
+  "spark.master" = "yarn",
+  "spark.submit.deployMode" = "cluster",
+  "spark.executor.memory" = "1g",
+  "spark.yarn.queue" = "default",
+  "spark.hadoop.yarn.resourcemanager.ha.enabled" = "true",
+  "spark.hadoop.yarn.resourcemanager.ha.rm-ids" = "rm1,rm2",
+  "spark.hadoop.yarn.resourcemanager.address.rm1" = "xxxx:8032",
+  "spark.hadoop.yarn.resourcemanager.address.rm2" = "xxxx:8032",
+  "spark.hadoop.fs.defaultFS" = "hdfs://nameservices01",
+  "spark.hadoop.dfs.nameservices" = "nameservices01",
+  "spark.hadoop.dfs.ha.namenodes.nameservices01" = "mynamenode1,mynamenode2",
+  "spark.hadoop.dfs.namenode.rpc-address.nameservices01.mynamenode1" = "xxxx:8020",
+  "spark.hadoop.dfs.namenode.rpc-address.nameservices01.mynamenode2" = "xxxx:8020",
+  "spark.hadoop.dfs.client.failover.proxy.provider" = "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider",
+  "working_dir" = "hdfs://nameservices01/doris_prd_data/sinan/spark_load/",
+  "broker" = "broker_name",
+  "broker.username" = "username",
+  "broker.password" = "",
+  "broker.dfs.nameservices" = "nameservices01",
+  "broker.dfs.ha.namenodes.HDFS4001273" = "mynamenode1, mynamenode2",
+  "broker.dfs.namenode.rpc-address.nameservices01.mynamenode1" = "xxxx:8020",
+  "broker.dfs.namenode.rpc-address.nameservices01.mynamenode2" = "xxxx:8020",
+  "broker.dfs.client.failover.proxy.provider" = "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider"
+);
+
 ```
 
 **Spark Load supports Kerberos authentication**
