@@ -183,15 +183,23 @@ REVOKE USAGE_PRIV ON RESOURCE resource_name FROM ROLE role_name
 
 - `type`: resource type, required. Currently, only spark is supported.
 - Spark related parameters are as follows:
-
   - `spark.master`: required, yarn is supported at present, `spark://host:port`.
-
   - `spark.submit.deployMode`: the deployment mode of Spark Program. It is required and supports cluster and client.
-
-  - `spark.hadoop.yarn.resourcemanager.address`: required when master is yarn.
-
   - `spark.hadoop.fs.defaultfs`: required when master is yarn.
-
+- YARN RM related parameters are as follows：
+    - If Spark is a single-point RM, you need to configure `spark.hadoop.yarn.resourcemanager.address`，address of the single point resource manager.
+    - If Spark is RM-HA, it needs to be configured (where hostname and address are optional)：
+      - `spark.hadoop.yarn.resourcemanager.ha.enabled`: ResourceManager enables HA, set to true.
+      - `spark.hadoop.yarn.resourcemanager.ha.rm-ids`: List of ResourceManager logical IDs。
+      - `spark.hadoop.yarn.resourcemanager.hostname.rm-id`: For each rm-id, specify the hostname of the ResourceManager。
+      - `spark.hadoop.yarn.resourcemanager.address.rm-id`: For each rm-id, specify the host:port for clients to submit jobs。
+- HDFS HA related parameters are as follows：
+    - `spark.hadoop.fs.defaultFS`, hdfs client default path prefix
+    - `spark.hadoop.dfs.nameservices`, hdfs cluster logical name
+    - `spark.hadoop.dfs.ha.namenodes.nameservices01` , unique identifier for each NameNode in the nameservice
+    - `spark.hadoop.dfs.namenode.rpc-address.nameservices01.mynamenode1`, fully qualified RPC address for each NameNode
+    - `spark.hadoop.dfs.namenode.rpc-address.nameservices01.mynamenode2`, fully qualified RPC address for each NameNode
+    - `spark.hadoop.dfs.client.failover.proxy.provider` = `org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider`, set the implementation class
   - Other parameters are optional, refer to `http://spark.apache.org/docs/latest/configuration.html`
 - `working_dir`: directory used by ETL. Spark is required when used as an ETL resource. For example: `hdfs://host :port/tmp/doris`.
 - `broker.hadoop.security.authentication`: Specify the authentication method as kerberos.
